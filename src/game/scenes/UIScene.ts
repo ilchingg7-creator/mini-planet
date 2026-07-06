@@ -33,6 +33,22 @@ export class UIScene extends Phaser.Scene {
       this.tweens.add({ targets: [createButton, createLabel], scale: 0.96, duration: 60, yoyo: true });
     });
 
+    const adButton = this.add.rectangle(600, 900, 110, 88, 0x7cc7ff).setStrokeStyle(4, 0x3289c9);
+    const adLabel = this.add
+      .text(600, 900, 'x2', {
+        fontFamily: 'Arial',
+        fontSize: '30px',
+        color: '#07324f',
+      })
+      .setOrigin(0.5);
+
+    adButton.setInteractive();
+    adButton.on('pointerdown', async () => {
+      const bridge = this.registry.get('yandexBridge');
+      await bridge?.showRewardedAd('incomeBoost');
+      this.tweens.add({ targets: [adButton, adLabel], scale: 0.96, duration: 60, yoyo: true });
+    });
+
     this.scene.get('GameScene').events.on('save-changed', (save: MiniPlanetSaveData) => {
       this.coinText?.setText(`Монеты: ${save.economy.coins}`);
     });

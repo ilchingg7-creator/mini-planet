@@ -1,11 +1,15 @@
 import Phaser from 'phaser';
+import { createYandexBridge } from '../systems/yandex';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
     super('BootScene');
   }
 
-  create(): void {
+  async create(): Promise<void> {
+    const bridge = await createYandexBridge();
+    await bridge.ready();
+    this.registry.set('yandexBridge', bridge);
     this.scene.start('PreloadScene');
   }
 }
