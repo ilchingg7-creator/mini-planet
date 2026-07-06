@@ -49,8 +49,29 @@ export class UIScene extends Phaser.Scene {
       this.tweens.add({ targets: [adButton, adLabel], scale: 0.96, duration: 60, yoyo: true });
     });
 
+    this.createSlotHitAreas();
+
     this.scene.get('GameScene').events.on('save-changed', (save: MiniPlanetSaveData) => {
       this.coinText?.setText(`Монеты: ${save.economy.coins}`);
+    });
+  }
+
+  private createSlotHitAreas(): void {
+    const gameScene = this.scene.get('GameScene') as Phaser.Scene & { selectSlot(slotIndex: number): void };
+    const slotPositions = [
+      { x: 150, y: 1040 },
+      { x: 270, y: 1040 },
+      { x: 390, y: 1040 },
+      { x: 510, y: 1040 },
+      { x: 210, y: 1160 },
+      { x: 330, y: 1160 },
+    ];
+
+    slotPositions.forEach((position, index) => {
+      this.add
+        .rectangle(position.x, position.y, 108, 108, 0xffffff, 0.001)
+        .setInteractive()
+        .on('pointerdown', () => gameScene.selectSlot(index));
     });
   }
 }

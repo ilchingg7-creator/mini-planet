@@ -7,6 +7,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   async create(): Promise<void> {
+    this.input.setGlobalTopOnly(false);
     const bridge = await createYandexBridge();
     await bridge.ready();
     this.registry.set('yandexBridge', bridge);
