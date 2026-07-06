@@ -2,8 +2,13 @@ import { BIOMES, getBiomeById, getItemById } from '../../../src/game/data/biomes
 
 describe('biome content', () => {
   it('ships prototype data with two playable biomes', () => {
-    expect(BIOMES.map((biome) => biome.id)).toEqual(['green', 'sweet']);
+    expect(BIOMES.map((biome) => biome.id).slice(0, 2)).toEqual(['green', 'sweet']);
     expect(BIOMES.every((biome) => biome.items.length >= 8)).toBe(true);
+  });
+
+  it('defines the first release content target in data', () => {
+    expect(BIOMES.map((biome) => biome.id)).toEqual(['green', 'sweet', 'sea', 'moon']);
+    expect(BIOMES.every((biome) => biome.items.length === 12)).toBe(true);
   });
 
   it('keeps item order data-driven and unique', () => {
