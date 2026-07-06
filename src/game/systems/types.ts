@@ -29,3 +29,14 @@ export interface MergeState {
   selectedSlotIndex?: number;
   lastDiscoveryItemId?: ItemId;
 }
+
+export type UpgradeId = 'autoCreate' | 'income' | 'slots';
+
+export interface EconomyState {
+  coins: number;
+  planetLevel: number;
+  currentBiomeId: BiomeId;
+  upgrades: Record<UpgradeId, number>;
+  rewardedBoostEndsAt?: number;
+  lastSavedAt: number;
+}
