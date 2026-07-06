@@ -69,13 +69,37 @@ The MVP must not include:
 - Casino-like visuals or language.
 - Procedural content generation at runtime.
 
+## Content Scale
+
+The game must separate prototype content from release content.
+
+Prototype milestone:
+
+- 2 biomes.
+- 8 items per biome.
+- Enough content to test the core loop, save data, asset loading, and planet decoration flow.
+
+First release target:
+
+- 4 biomes.
+- 12 items per biome.
+- 48 total item discoveries.
+
+Post-release content roadmap:
+
+- 8 planned biomes.
+- 12 items per biome.
+- 96 total item discoveries after updates.
+
+The implementation must be data-driven so new content does not require new mechanics. Adding a biome should mean adding biome data, approved item icons, approved decoration sprites, and economy tuning values.
+
 ## Initial Content
 
 The first playable build should contain two biomes.
 
 ### Green Biome
 
-Items:
+Prototype items:
 
 1. Росток
 2. Цветок
@@ -86,9 +110,16 @@ Items:
 7. Мельница
 8. Радуга
 
+Release extension:
+
+9. Садовая лавка
+10. Птичий домик
+11. Солнечная башня
+12. Дворец радуги
+
 ### Sweet Biome
 
-Items:
+Prototype items:
 
 1. Конфета
 2. Кекс
@@ -99,7 +130,26 @@ Items:
 7. Торт-дом
 8. Сахарный замок
 
-Post-MVP biomes can add lunar and magic themes, but they are not required before the first playable version is fun.
+Release extension:
+
+9. Леденцовый мост
+10. Вафельная мельница
+11. Шоколадный фонтан
+12. Королевский торт
+
+Two more biomes are required for first release:
+
+- Морская планета
+- Лунная планета
+
+Four more biomes are planned for updates:
+
+- Игрушечная планета
+- Магическая планета
+- Зимняя планета
+- Радужная планета
+
+Post-MVP biomes are content expansions only. They must reuse the same merge, save, upgrade, economy, and decoration systems.
 
 ## Economy
 
@@ -177,7 +227,7 @@ Open-source assets can be used only when the license is clear and compatible wit
 
 ## Required Asset List
 
-MVP assets:
+Prototype assets:
 
 - 1 main background.
 - 1 green planet base.
@@ -189,6 +239,22 @@ MVP assets:
 - Upgrade icon.
 - Settings icon.
 - Simple logo/title image.
+
+First release assets:
+
+- 4 biome planet bases or overlays.
+- 48 item icons.
+- 48 planet decorations or decoration variants.
+- Approved UI icon set.
+- Game icon.
+- Cover image.
+- 3 screenshots or promotional compositions.
+
+Post-release planned assets:
+
+- 4 additional biome planet bases or overlays.
+- 48 additional item icons.
+- 48 additional planet decorations or decoration variants.
 
 Promo assets before publication:
 
@@ -265,6 +331,8 @@ Proposed modules:
 - `systems/yandex.ts`: Yandex SDK wrapper and local fallback.
 - `assets/manifest.json`: approved asset references and source notes.
 
+Content data must support arbitrary biome and item counts. The release target is 12 items per biome, but merge logic must not hard-code this number.
+
 ## Yandex Games Constraints
 
 The game should be prepared for Yandex Games from the start:
@@ -290,12 +358,18 @@ The MVP is successful when:
 - All non-placeholder gameplay assets have been previewed and approved.
 - The implementation has no required mechanics beyond tap, merge, upgrade, and save.
 
+The first release is successful when:
+
+- Four biomes are playable.
+- Each release biome has 12 item discoveries.
+- All release item and decoration assets have been previewed, approved, and recorded in the asset manifest.
+- Additional biomes can be added by data and assets without changing core merge logic.
+
 ## Open Decisions
 
 These are intentionally deferred until implementation preview:
 
 - Whether the MVP starts with four or six slots.
-- Whether biome switching is manual or automatic after item 8.
+- Whether biome switching is manual or automatic after the final item in a biome.
 - Exact upgrade prices.
 - Final name and icon.
-
