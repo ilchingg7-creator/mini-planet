@@ -18,3 +18,14 @@ export interface BiomeDefinition {
   backgroundAssetKey: string;
   items: ItemDefinition[];
 }
+
+export interface GameSlot {
+  index: number;
+  itemId?: ItemId;
+}
+
+export interface MergeState {
+  slots: GameSlot[];
+  selectedSlotIndex?: number;
+  lastDiscoveryItemId?: ItemId;
+}
