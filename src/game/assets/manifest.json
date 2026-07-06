@@ -1,0 +1,128 @@
+[
+  {
+    "key": "background_day",
+    "path": "assets/approved/background_day.png",
+    "kind": "background",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Bright toy-like mobile game background, cheerful daylight, soft sky blue and green, no text, no watermark."
+  },
+  {
+    "key": "planet_green",
+    "path": "assets/approved/planet_green.png",
+    "kind": "planet",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Cute round green mini planet, toy-like 3D style, isolated, no text, no watermark."
+  },
+  {
+    "key": "planet_sweet",
+    "path": "assets/approved/planet_sweet.png",
+    "kind": "planet",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Cute round sweet candy mini planet, toy-like 3D style, isolated, no text, no watermark."
+  },
+  {
+    "key": "item_green_sprout",
+    "path": "assets/approved/item_green_sprout.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Cute toy-like 3D sprout icon, isolated, no text, no watermark."
+  },
+  {
+    "key": "item_green_flower",
+    "path": "assets/approved/item_green_flower.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Cute toy-like 3D flower icon, isolated, no text, no watermark."
+  },
+  {
+    "key": "item_sweet_candy",
+    "path": "assets/approved/item_sweet_candy.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Cute toy-like 3D candy icon, isolated, no text, no watermark."
+  },
+  {
+    "key": "item_sweet_cupcake",
+    "path": "assets/approved/item_sweet_cupcake.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Cute toy-like 3D cupcake icon, isolated, no text, no watermark."
+  },
+  {
+    "key": "decor_green_sprout",
+    "path": "assets/approved/decor_green_sprout.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Small cute sprout decoration for a mini planet, toy-like 3D style, no text, no watermark."
+  },
+  {
+    "key": "decor_green_flower",
+    "path": "assets/approved/decor_green_flower.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Small cute flower decoration for a mini planet, toy-like 3D style, no text, no watermark."
+  },
+  {
+    "key": "decor_sweet_candy",
+    "path": "assets/approved/decor_sweet_candy.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Small cute candy decoration for a mini planet, toy-like 3D style, no text, no watermark."
+  },
+  {
+    "key": "decor_sweet_cupcake",
+    "path": "assets/approved/decor_sweet_cupcake.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Small cute cupcake decoration for a mini planet, toy-like 3D style, no text, no watermark."
+  },
+  {
+    "key": "ui_coin",
+    "path": "assets/approved/ui_coin.png",
+    "kind": "ui",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Simple cute gold coin UI icon, toy-like 3D style, no text, no watermark."
+  },
+  {
+    "key": "ui_create",
+    "path": "assets/approved/ui_create.png",
+    "kind": "ui",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Simple cute create button UI icon with sparkle, toy-like 3D style, no text, no watermark."
+  },
+  {
+    "key": "ui_upgrade",
+    "path": "assets/approved/ui_upgrade.png",
+    "kind": "ui",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Simple cute upgrade arrow UI icon, toy-like 3D style, no text, no watermark."
+  }
+]
