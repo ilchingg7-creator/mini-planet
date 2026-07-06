@@ -40,3 +40,10 @@ export interface EconomyState {
   rewardedBoostEndsAt?: number;
   lastSavedAt: number;
 }
+
+export interface MiniPlanetSaveData {
+  version: 1;
+  economy: EconomyState;
+  merge: MergeState;
+  discoveredItemIds: ItemId[];
+}
