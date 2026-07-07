@@ -22,6 +22,7 @@ export class GameScene extends Phaser.Scene {
   private slotSprites: Phaser.GameObjects.Container[] = [];
   private planet?: Phaser.GameObjects.Image;
   private background?: Phaser.GameObjects.Image;
+  private planetMask?: Phaser.GameObjects.Graphics;
   private decorSprites: Phaser.GameObjects.Image[] = [];
 
   constructor() {
@@ -32,11 +33,18 @@ export class GameScene extends Phaser.Scene {
     this.save = loadSave(window.localStorage, Date.now());
 
     const biome = this.getCurrentBiome();
-    this.background = this.add.image(360, 640, biome.backgroundAssetKey).setDisplaySize(720, 1280);
-    this.planet = this.add.image(360, 510, biome.planetAssetKey).setDisplaySize(360, 360);
+    this.drawBackdrop();
+    this.background = this.add.image(360, 640, biome.backgroundAssetKey).setDisplaySize(720, 1280).setAlpha(0.08);
+    this.drawTray();
+    this.planet = this.add.image(360, 385, biome.planetAssetKey).setDisplaySize(470, 470);
+    this.planetMask = this.add.graphics();
+    this.planetMask.fillStyle(0xffffff);
+    this.planetMask.fillCircle(360, 385, 218);
+    this.planet.setMask(this.planetMask.createGeometryMask());
+    this.planetMask.setVisible(false);
     this.tweens.add({
       targets: this.planet,
-      y: 525,
+      y: 400,
       duration: 1700,
       yoyo: true,
       repeat: -1,
@@ -94,8 +102,33 @@ export class GameScene extends Phaser.Scene {
   private drawBiome(): void {
     const biome = this.getCurrentBiome();
 
-    this.background?.setTexture(biome.backgroundAssetKey);
-    this.planet?.setTexture(biome.planetAssetKey);
+    if (this.background && this.textures.exists(biome.backgroundAssetKey)) {
+      this.background.setTexture(biome.backgroundAssetKey);
+    }
+
+    if (this.planet && this.textures.exists(biome.planetAssetKey)) {
+      this.planet.setTexture(biome.planetAssetKey);
+    }
+  }
+
+  private drawBackdrop(): void {
+    const backdrop = this.add.graphics();
+    backdrop.fillGradientStyle(0x95ddff, 0x95ddff, 0xd9f7ff, 0xd9f7ff, 1);
+    backdrop.fillRect(0, 0, 720, 1280);
+
+    backdrop.fillStyle(0xffffff, 0.45);
+    backdrop.fillEllipse(130, 200, 180, 72);
+    backdrop.fillEllipse(600, 260, 220, 82);
+    backdrop.fillEllipse(120, 655, 250, 100);
+    backdrop.fillEllipse(610, 625, 210, 78);
+  }
+
+  private drawTray(): void {
+    const tray = this.add.graphics();
+    tray.fillStyle(0xffffff, 0.72);
+    tray.fillRoundedRect(60, 842, 600, 378, 28);
+    tray.lineStyle(4, 0x7bcf73, 0.5);
+    tray.strokeRoundedRect(60, 842, 600, 378, 28);
   }
 
   private drawSlots(): void {
@@ -106,14 +139,14 @@ export class GameScene extends Phaser.Scene {
       const position = SLOT_POSITIONS[slot.index];
       const container = this.add.container(position.x, position.y);
       const bg = this.add
-        .rectangle(0, 0, 92, 92, 0xffffff, 0.9)
-        .setStrokeStyle(4, this.save.merge.selectedSlotIndex === slot.index ? 0xffcc33 : 0x6bbf59);
+        .rectangle(0, 0, 96, 96, 0xffffff, 0.92)
+        .setStrokeStyle(4, this.save.merge.selectedSlotIndex === slot.index ? 0xffc928 : 0x62bd5a);
       container.add(bg);
 
       if (slot.itemId) {
         const item = getItemById(slot.itemId);
         if (item && this.textures.exists(item.iconKey)) {
-          container.add(this.add.image(0, -4, item.iconKey).setDisplaySize(72, 72));
+          container.add(this.add.image(0, -4, item.iconKey).setDisplaySize(70, 70));
         } else {
           container.add(
             this.add
@@ -127,8 +160,8 @@ export class GameScene extends Phaser.Scene {
         }
       }
 
-      container.setSize(92, 92);
-      container.setInteractive(new Phaser.Geom.Rectangle(-46, -46, 92, 92), Phaser.Geom.Rectangle.Contains);
+      container.setSize(96, 96);
+      container.setInteractive(new Phaser.Geom.Rectangle(-48, -48, 96, 96), Phaser.Geom.Rectangle.Contains);
       container.on('pointerdown', () => this.selectSlot(slot.index));
       this.slotSprites.push(container);
     });
@@ -150,7 +183,7 @@ export class GameScene extends Phaser.Scene {
         return;
       }
 
-      const decor = this.add.image(position.x, position.y, item.decorKey).setDisplaySize(72, 72);
+      const decor = this.add.image(position.x, position.y - 90, item.decorKey).setDisplaySize(58, 58);
       this.decorSprites.push(decor);
       this.tweens.add({
         targets: decor,
