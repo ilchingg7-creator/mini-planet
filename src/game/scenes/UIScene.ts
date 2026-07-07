@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SLOT_POSITIONS } from '../data/layout';
 import type { MiniPlanetSaveData } from '../systems/types';
 
 export class UIScene extends Phaser.Scene {
@@ -9,7 +10,7 @@ export class UIScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.coinText = this.add.text(32, 28, 'Монеты: 0', {
+    this.coinText = this.add.text(32, 28, '\u041c\u043e\u043d\u0435\u0442\u044b: 0', {
       fontFamily: 'Arial',
       fontSize: '28px',
       color: '#17442a',
@@ -17,9 +18,9 @@ export class UIScene extends Phaser.Scene {
       padding: { x: 16, y: 8 },
     });
 
-    const createButton = this.add.rectangle(360, 900, 300, 88, 0xffd44d).setStrokeStyle(4, 0xd99b1f);
+    const createButton = this.add.rectangle(360, 800, 300, 88, 0xffd44d).setStrokeStyle(4, 0xd99b1f);
     const createLabel = this.add
-      .text(360, 900, 'Создать', {
+      .text(360, 800, '\u0421\u043e\u0437\u0434\u0430\u0442\u044c', {
         fontFamily: 'Arial',
         fontSize: '36px',
         color: '#5b3b00',
@@ -33,9 +34,9 @@ export class UIScene extends Phaser.Scene {
       this.tweens.add({ targets: [createButton, createLabel], scale: 0.96, duration: 60, yoyo: true });
     });
 
-    const adButton = this.add.rectangle(600, 900, 110, 88, 0x7cc7ff).setStrokeStyle(4, 0x3289c9);
+    const adButton = this.add.rectangle(600, 800, 110, 88, 0x7cc7ff).setStrokeStyle(4, 0x3289c9);
     const adLabel = this.add
-      .text(600, 900, 'x2', {
+      .text(600, 800, 'x2', {
         fontFamily: 'Arial',
         fontSize: '30px',
         color: '#07324f',
@@ -52,24 +53,16 @@ export class UIScene extends Phaser.Scene {
     this.createSlotHitAreas();
 
     this.scene.get('GameScene').events.on('save-changed', (save: MiniPlanetSaveData) => {
-      this.coinText?.setText(`Монеты: ${save.economy.coins}`);
+      this.coinText?.setText(`\u041c\u043e\u043d\u0435\u0442\u044b: ${save.economy.coins}`);
     });
   }
 
   private createSlotHitAreas(): void {
     const gameScene = this.scene.get('GameScene') as Phaser.Scene & { selectSlot(slotIndex: number): void };
-    const slotPositions = [
-      { x: 150, y: 1040 },
-      { x: 270, y: 1040 },
-      { x: 390, y: 1040 },
-      { x: 510, y: 1040 },
-      { x: 210, y: 1160 },
-      { x: 330, y: 1160 },
-    ];
 
-    slotPositions.forEach((position, index) => {
+    SLOT_POSITIONS.forEach((position, index) => {
       this.add
-        .rectangle(position.x, position.y, 108, 108, 0xffffff, 0.001)
+        .rectangle(position.x, position.y, 100, 100, 0xffffff, 0.001)
         .setInteractive()
         .on('pointerdown', () => gameScene.selectSlot(index));
     });

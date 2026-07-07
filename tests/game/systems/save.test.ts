@@ -20,7 +20,7 @@ describe('save adapter', () => {
 
     expect(save.version).toBe(1);
     expect(save.economy.lastSavedAt).toBe(1000);
-    expect(save.merge.slots).toHaveLength(6);
+    expect(save.merge.slots).toHaveLength(12);
   });
 
   it('round-trips save data', () => {
@@ -31,6 +31,17 @@ describe('save adapter', () => {
     writeSave(storage, changed);
 
     expect(loadSave(storage, 2000).discoveredItemIds).toEqual(['green_sprout']);
+  });
+
+  it('expands old six-slot saves to the current board size', () => {
+    const storage = createMemoryStorage();
+    const save = { ...createDefaultSave(1000), merge: { slots: Array.from({ length: 6 }, (_, index) => ({ index })) } };
+    writeSave(storage, save);
+
+    const loaded = loadSave(storage, 2000);
+
+    expect(loaded.merge.slots).toHaveLength(12);
+    expect(loaded.merge.slots.slice(0, 6)).toEqual(save.merge.slots);
   });
 
   it('falls back to default save for invalid JSON', () => {

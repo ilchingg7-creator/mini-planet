@@ -3,6 +3,7 @@ import {
   createInitialMergeState,
   selectSlot,
 } from '../../../src/game/systems/merge';
+import { BIOMES } from '../../../src/game/data/biomes';
 
 describe('merge system', () => {
   it('creates a base item in the first empty slot', () => {
@@ -49,5 +50,33 @@ describe('merge system', () => {
 
     expect(switched.selectedSlotIndex).toBe(1);
     expect(switched.slots.map((slot) => slot.itemId)).toEqual(['green_sprout', 'green_flower']);
+  });
+
+  it('can reach the final item in a twelve-item biome with twelve slots', () => {
+    const biome = BIOMES[0];
+    let state = createInitialMergeState(12);
+
+    for (let createCount = 0; createCount < Math.pow(2, biome.items.length - 1); createCount += 1) {
+      state = createBaseItem(state, biome.items[0].id);
+
+      let mergedPair = true;
+      while (mergedPair) {
+        mergedPair = false;
+
+        for (const item of biome.items) {
+          const matchingSlots = state.slots.filter((slot) => slot.itemId === item.id);
+          const nextItem = biome.items[item.tier + 1];
+
+          if (matchingSlots.length >= 2 && nextItem) {
+            state = selectSlot(state, matchingSlots[0].index, nextItem.id);
+            state = selectSlot(state, matchingSlots[1].index, nextItem.id);
+            mergedPair = true;
+            break;
+          }
+        }
+      }
+    }
+
+    expect(state.slots.some((slot) => slot.itemId === biome.items[biome.items.length - 1].id)).toBe(true);
   });
 });

@@ -1,5 +1,6 @@
 import { createInitialEconomyState } from './economy';
 import { createInitialMergeState } from './merge';
+import { BOARD_SLOT_COUNT } from '../data/layout';
 import type { MiniPlanetSaveData } from './types';
 
 const SAVE_KEY = 'mini-planet-save';
@@ -13,7 +14,7 @@ export function createDefaultSave(now: number): MiniPlanetSaveData {
   return {
     version: 1,
     economy: createInitialEconomyState(now),
-    merge: createInitialMergeState(6),
+    merge: createInitialMergeState(BOARD_SLOT_COUNT),
     discoveredItemIds: [],
   };
 }
@@ -27,7 +28,7 @@ export function loadSave(storage: SaveStorage, now: number): MiniPlanetSaveData 
 
   try {
     const parsed = JSON.parse(raw) as MiniPlanetSaveData;
-    return isVersionOneSave(parsed) ? parsed : createDefaultSave(now);
+    return isVersionOneSave(parsed) ? normalizeSave(parsed) : createDefaultSave(now);
   } catch {
     return createDefaultSave(now);
   }
@@ -44,4 +45,22 @@ function isVersionOneSave(value: MiniPlanetSaveData): value is MiniPlanetSaveDat
     Array.isArray(value.merge?.slots) &&
     typeof value.economy?.coins === 'number'
   );
+}
+
+function normalizeSave(save: MiniPlanetSaveData): MiniPlanetSaveData {
+  if (save.merge.slots.length >= BOARD_SLOT_COUNT) {
+    return save;
+  }
+
+  const extraSlots = Array.from({ length: BOARD_SLOT_COUNT - save.merge.slots.length }, (_, offset) => ({
+    index: save.merge.slots.length + offset,
+  }));
+
+  return {
+    ...save,
+    merge: {
+      ...save.merge,
+      slots: [...save.merge.slots, ...extraSlots],
+    },
+  };
 }
