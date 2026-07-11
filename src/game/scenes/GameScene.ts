@@ -17,6 +17,7 @@ import {
 import { advanceBiomeIfComplete } from '../systems/progression';
 import { createDefaultSave, loadSave, writeSave } from '../systems/save';
 import type { MiniPlanetSaveData } from '../systems/types';
+import { AudioManager, PhaserAudioPort } from '../systems/AudioManager';
 
 export class GameScene extends Phaser.Scene {
   private save: MiniPlanetSaveData = createDefaultSave(Date.now());
@@ -32,6 +33,14 @@ export class GameScene extends Phaser.Scene {
 
   create(): void {
     this.save = loadSave(window.localStorage, Date.now());
+    const audio = new AudioManager(new PhaserAudioPort(this), window.localStorage);
+    this.registry.set('audioManager', audio);
+    const onVisibilityChange = () => document.hidden ? audio.pause() : audio.resume();
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      audio.destroy();
+    });
 
     const biome = this.getCurrentBiome();
     this.cameras.main.setBackgroundColor('#2bbaf3');
@@ -65,6 +74,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   createBaseItem(): boolean {
+    const audio = this.getAudio();
+    audio?.unlock(this.save.economy.currentBiomeId);
     const biome = this.getCurrentBiome();
     const highestReachedTier = getHighestReachedTier(biome, this.save.discoveredItemIds);
     const generatedItem = pickCreateItem(biome, highestReachedTier);
@@ -73,6 +84,7 @@ export class GameScene extends Phaser.Scene {
     const created = nextMerge !== this.save.merge;
 
     if (!created) {
+      audio?.playEffect('sfx_invalid');
       return false;
     }
 
@@ -86,10 +98,13 @@ export class GameScene extends Phaser.Scene {
       (slot, index) => slot.itemId !== previousSlots[index]?.itemId,
     );
     this.pulseSlot(createdIndex);
+    audio?.playEffect('sfx_create');
     return true;
   }
 
   selectSlot(slotIndex: number): void {
+    const audio = this.getAudio();
+    audio?.unlock(this.save.economy.currentBiomeId);
     const previousLevel = this.save.economy.planetLevel;
     const slot = this.save.merge.slots[slotIndex];
     const item = slot.itemId ? getItemById(slot.itemId) : undefined;
@@ -110,14 +125,24 @@ export class GameScene extends Phaser.Scene {
       discoveredItemIds,
     };
     this.save = advanceBiomeIfComplete(this.save, BIOMES, BOARD_SLOT_COUNT);
+    audio?.setBiome(this.save.economy.currentBiomeId);
 
     this.persistAndRedraw();
     if (this.save.economy.planetLevel > previousLevel) {
+      audio?.playEffect('sfx_level');
       this.events.emit('level-advanced', this.save.economy.planetLevel);
     }
     if (mergedItemId) {
+      audio?.playEffect('sfx_merge');
+      audio?.playEffect('sfx_coin');
       this.events.emit('item-merged');
+    } else if (slot.itemId) {
+      audio?.playEffect('sfx_select');
     }
+  }
+
+  private getAudio(): AudioManager | undefined {
+    return this.registry.get('audioManager') as AudioManager | undefined;
   }
 
   private persistAndRedraw(): void {

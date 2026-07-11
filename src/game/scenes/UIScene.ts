@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { SLOT_POSITIONS } from '../data/layout';
 import type { MiniPlanetSaveData } from '../systems/types';
 import { translate, type Locale, type MessageKey } from '../i18n';
+import type { AudioManager } from '../systems/AudioManager';
 
 export class UIScene extends Phaser.Scene {
   private coinText?: Phaser.GameObjects.Text;
@@ -187,23 +188,32 @@ export class UIScene extends Phaser.Scene {
   }
 
   private createUtilityButtons(): void {
-    this.createUtilityButton(310, this.locale.toUpperCase(), () => {
+    this.createUtilityButton(280, this.locale.toUpperCase(), () => {
       const nextLocale: Locale = this.locale === 'ru' ? 'en' : 'ru';
       this.registry.set('locale', nextLocale);
       document.documentElement.lang = nextLocale;
       this.scene.restart();
     });
-    this.createUtilityButton(410, '?', () => this.showSupport());
+    this.createUtilityButton(380, '?', () => this.showSupport());
+    const audio = this.registry.get('audioManager') as AudioManager | undefined;
+    const soundButton = this.createUtilityButton(480, audio?.isEnabled() === false ? '🔇' : '🔊', () => {
+      const enabled = audio?.toggle() ?? false;
+      soundButton.setText(enabled ? '🔊' : '🔇');
+    });
   }
 
-  private createUtilityButton(x: number, label: string, onClick: () => void): void {
+  private createUtilityButton(x: number, label: string, onClick: () => void): Phaser.GameObjects.Text {
     const background = this.add.graphics();
     background.fillStyle(0x168bc9, 0.92);
     background.fillRoundedRect(x - 42, 151, 84, 56, 22);
     background.lineStyle(3, 0xffffff, 0.9);
     background.strokeRoundedRect(x - 42, 151, 84, 56, 22);
-    this.add.text(x, 179, label, { fontFamily: 'Arial', fontSize: '22px', fontStyle: 'bold', color: '#ffffff' }).setOrigin(0.5);
-    this.add.zone(x, 179, 84, 56).setInteractive({ useHandCursor: true }).on('pointerdown', onClick);
+    const text = this.add.text(x, 179, label, { fontFamily: 'Arial', fontSize: '22px', fontStyle: 'bold', color: '#ffffff' }).setOrigin(0.5);
+    this.add.zone(x, 179, 84, 56).setInteractive({ useHandCursor: true }).on('pointerdown', () => {
+      (this.registry.get('audioManager') as AudioManager | undefined)?.playEffect('sfx_button');
+      onClick();
+    });
+    return text;
   }
 
   private updateBoostCountdown(): void {
@@ -295,14 +305,17 @@ export class UIScene extends Phaser.Scene {
     const rewarded = await bridge?.showRewardedAd('mergeBoost', {
       onOpen: () => {
         this.scene.pause('GameScene');
-        this.sound.pauseAll();
+        (this.registry.get('audioManager') as AudioManager | undefined)?.pause();
       },
       onClose: () => {
         this.scene.resume('GameScene');
-        this.sound.resumeAll();
+        (this.registry.get('audioManager') as AudioManager | undefined)?.resume();
       },
     });
-    if (rewarded) gameScene.activateMergeBoost(120_000);
+    if (rewarded) {
+      gameScene.activateMergeBoost(120_000);
+      (this.registry.get('audioManager') as AudioManager | undefined)?.playEffect('sfx_reward');
+    }
   }
 
   private showSupport(): void {

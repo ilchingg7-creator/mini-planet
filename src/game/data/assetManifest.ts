@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import manifest from '../assets/manifest.json';
 import greenV2Manifest from '../assets/green-v2.json';
 
-export type AssetKind = 'background' | 'planet' | 'item' | 'decor' | 'ui';
+export type AssetKind = 'background' | 'planet' | 'item' | 'decor' | 'ui' | 'music' | 'sfx';
 export type AssetStatus = 'approved';
 
 export interface AssetRecord {
@@ -56,6 +56,10 @@ export const APPROVED_ASSETS = [
 
 export function loadApprovedAssets(scene: Phaser.Scene): void {
   for (const asset of APPROVED_ASSETS) {
-    scene.load.image(asset.key, asset.path);
+    if (asset.kind === 'music' || asset.kind === 'sfx') {
+      scene.load.audio(asset.key, asset.path);
+    } else {
+      scene.load.image(asset.key, asset.path);
+    }
   }
 }

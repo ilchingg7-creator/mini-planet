@@ -124,5 +124,41 @@
     "source": "generated",
     "license": "project-generated",
     "prompt": "Simple cute upgrade arrow UI icon, toy-like 3D style, no text, no watermark."
+  },
+  {
+    "key": "music_green", "path": "assets/audio/music_green.wav", "kind": "music", "status": "approved", "source": "generated", "license": "project-generated", "prompt": "Deterministic locally generated cozy green biome loop."
+  },
+  {
+    "key": "music_sweet", "path": "assets/audio/music_sweet.wav", "kind": "music", "status": "approved", "source": "generated", "license": "project-generated", "prompt": "Deterministic locally generated cozy sweet biome loop."
+  },
+  {
+    "key": "music_sea", "path": "assets/audio/music_sea.wav", "kind": "music", "status": "approved", "source": "generated", "license": "project-generated", "prompt": "Deterministic locally generated cozy sea biome loop."
+  },
+  {
+    "key": "music_moon", "path": "assets/audio/music_moon.wav", "kind": "music", "status": "approved", "source": "generated", "license": "project-generated", "prompt": "Deterministic locally generated cozy moon biome loop."
+  },
+  {
+    "key": "sfx_button", "path": "assets/audio/sfx_button.wav", "kind": "sfx", "status": "approved", "source": "generated", "license": "project-generated", "prompt": "Deterministic locally generated button effect."
+  },
+  {
+    "key": "sfx_create", "path": "assets/audio/sfx_create.wav", "kind": "sfx", "status": "approved", "source": "generated", "license": "project-generated", "prompt": "Deterministic locally generated creation effect."
+  },
+  {
+    "key": "sfx_select", "path": "assets/audio/sfx_select.wav", "kind": "sfx", "status": "approved", "source": "generated", "license": "project-generated", "prompt": "Deterministic locally generated selection effect."
+  },
+  {
+    "key": "sfx_merge", "path": "assets/audio/sfx_merge.wav", "kind": "sfx", "status": "approved", "source": "generated", "license": "project-generated", "prompt": "Deterministic locally generated merge effect."
+  },
+  {
+    "key": "sfx_coin", "path": "assets/audio/sfx_coin.wav", "kind": "sfx", "status": "approved", "source": "generated", "license": "project-generated", "prompt": "Deterministic locally generated coin effect."
+  },
+  {
+    "key": "sfx_invalid", "path": "assets/audio/sfx_invalid.wav", "kind": "sfx", "status": "approved", "source": "generated", "license": "project-generated", "prompt": "Deterministic locally generated invalid action effect."
+  },
+  {
+    "key": "sfx_level", "path": "assets/audio/sfx_level.wav", "kind": "sfx", "status": "approved", "source": "generated", "license": "project-generated", "prompt": "Deterministic locally generated level effect."
+  },
+  {
+    "key": "sfx_reward", "path": "assets/audio/sfx_reward.wav", "kind": "sfx", "status": "approved", "source": "generated", "license": "project-generated", "prompt": "Deterministic locally generated reward effect."
   }
 ]
