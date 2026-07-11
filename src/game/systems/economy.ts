@@ -45,6 +45,21 @@ export function applyOfflineIncome(
   };
 }
 
+export function accruePassiveIncome(
+  state: EconomyState,
+  now: number,
+  discoveredItemIds: string[],
+  itemIncome: Record<string, number>,
+): EconomyState {
+  const incomePerSecond = calculatePassiveIncomePerSecond(
+    discoveredItemIds,
+    itemIncome,
+    state.upgrades.income,
+  );
+
+  return applyOfflineIncome(state, now, incomePerSecond);
+}
+
 export function buyUpgrade(state: EconomyState, upgradeId: UpgradeId): EconomyState {
   const level = state.upgrades[upgradeId];
   const cost = getUpgradeCost(upgradeId, level);

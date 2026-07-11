@@ -16,10 +16,16 @@ export class UIScene extends Phaser.Scene {
     this.createActionButtons();
     this.createSlotHitAreas();
 
-    this.scene.get('GameScene').events.on('save-changed', (save: MiniPlanetSaveData) => {
+    const gameScene = this.scene.get('GameScene') as Phaser.Scene & {
+      getSaveData(): MiniPlanetSaveData;
+    };
+    const updateCounters = (save: MiniPlanetSaveData) => {
       this.coinText?.setText(String(save.economy.coins));
       this.levelText?.setText('\u0423\u0440. ' + save.economy.planetLevel);
-    });
+    };
+
+    gameScene.events.on('save-changed', updateCounters);
+    updateCounters(gameScene.getSaveData());
   }
 
   private drawLogo(): void {

@@ -1,4 +1,5 @@
 import {
+  accruePassiveIncome,
   applyOfflineIncome,
   buyUpgrade,
   calculatePassiveIncomePerSecond,
@@ -22,6 +23,19 @@ describe('economy system', () => {
 
     expect(next.coins).toBe(600);
     expect(next.lastSavedAt).toBe(61_000);
+  });
+
+  it('accrues live income from discovered items over elapsed time', () => {
+    const initial = createInitialEconomyState(1_000);
+    const next = accruePassiveIncome(
+      initial,
+      4_000,
+      ['green_flower'],
+      { green_flower: 2 },
+    );
+
+    expect(next.coins).toBe(6);
+    expect(next.lastSavedAt).toBe(4_000);
   });
 
   it('buys an upgrade when coins are enough', () => {

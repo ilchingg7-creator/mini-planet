@@ -3,9 +3,14 @@ import { BIOMES, getBiomeById, getItemById } from '../data/biomes';
 import { BOARD_SLOT_COUNT, SLOT_POSITIONS } from '../data/layout';
 import { getPlanetDecorPlacement } from '../data/planetDecor';
 import { createBaseItem, selectSlot } from '../systems/merge';
+import { accruePassiveIncome } from '../systems/economy';
 import { advanceBiomeIfComplete } from '../systems/progression';
 import { createDefaultSave, loadSave, writeSave } from '../systems/save';
 import type { MiniPlanetSaveData } from '../systems/types';
+
+const ITEM_INCOME = Object.fromEntries(
+  BIOMES.flatMap((biome) => biome.items.map((item) => [item.id, item.baseIncome])),
+);
 
 export class GameScene extends Phaser.Scene {
   private save: MiniPlanetSaveData = createDefaultSave(Date.now());
@@ -21,6 +26,7 @@ export class GameScene extends Phaser.Scene {
 
   create(): void {
     this.save = loadSave(window.localStorage, Date.now());
+    this.collectPassiveIncome();
 
     const biome = this.getCurrentBiome();
     this.cameras.main.setBackgroundColor('#2bbaf3');
@@ -38,6 +44,15 @@ export class GameScene extends Phaser.Scene {
     this.drawDecorations();
     this.drawSlots();
     this.events.emit('save-changed', this.save);
+    this.time.addEvent({
+      delay: 1000,
+      loop: true,
+      callback: () => this.collectPassiveIncome(),
+    });
+  }
+
+  getSaveData(): MiniPlanetSaveData {
+    return this.save;
   }
 
   createBaseItem(): void {
@@ -82,6 +97,20 @@ export class GameScene extends Phaser.Scene {
     this.drawBiome();
     this.drawSlots();
     this.drawDecorations();
+    this.events.emit('save-changed', this.save);
+  }
+
+  private collectPassiveIncome(): void {
+    this.save = {
+      ...this.save,
+      economy: accruePassiveIncome(
+        this.save.economy,
+        Date.now(),
+        this.save.discoveredItemIds,
+        ITEM_INCOME,
+      ),
+    };
+    writeSave(window.localStorage, this.save);
     this.events.emit('save-changed', this.save);
   }
 
