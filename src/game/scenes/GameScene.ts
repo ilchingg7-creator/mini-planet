@@ -1,25 +1,11 @@
 import Phaser from 'phaser';
 import { BIOMES, getBiomeById, getItemById } from '../data/biomes';
 import { BOARD_SLOT_COUNT, SLOT_POSITIONS } from '../data/layout';
+import { getPlanetDecorPlacement } from '../data/planetDecor';
 import { createBaseItem, selectSlot } from '../systems/merge';
 import { advanceBiomeIfComplete } from '../systems/progression';
 import { createDefaultSave, loadSave, writeSave } from '../systems/save';
 import type { MiniPlanetSaveData } from '../systems/types';
-
-const DECOR_POSITIONS = [
-  { x: 248, y: 410, size: 54 },
-  { x: 360, y: 390, size: 58 },
-  { x: 200, y: 500, size: 58 },
-  { x: 410, y: 485, size: 76 },
-  { x: 302, y: 315, size: 90 },
-  { x: 330, y: 545, size: 82 },
-  { x: 220, y: 590, size: 84 },
-  { x: 420, y: 590, size: 84 },
-  { x: 170, y: 450, size: 62 },
-  { x: 465, y: 420, size: 68 },
-  { x: 275, y: 635, size: 84 },
-  { x: 385, y: 625, size: 94 },
-];
 
 export class GameScene extends Phaser.Scene {
   private save: MiniPlanetSaveData = createDefaultSave(Date.now());
@@ -184,16 +170,19 @@ export class GameScene extends Phaser.Scene {
     const currentBiomeId = this.save.economy.currentBiomeId;
     this.save.discoveredItemIds
       .filter((itemId) => getItemById(itemId)?.biomeId === currentBiomeId)
-      .slice(0, DECOR_POSITIONS.length)
+      .slice(0, 12)
       .forEach((itemId, index) => {
         const item = getItemById(itemId);
-        const position = DECOR_POSITIONS[index];
 
-        if (!item || !position || !this.textures.exists(item.decorKey)) {
+        if (!item || !this.textures.exists(item.decorKey)) {
           return;
         }
 
-        const decor = this.add.image(position.x, position.y, item.decorKey).setDisplaySize(position.size, position.size);
+        const placement = getPlanetDecorPlacement(item, index);
+        const decor = this.add
+          .image(placement.x, placement.y, item.decorKey)
+          .setDisplaySize(placement.size, placement.size)
+          .setDepth(1 + placement.y / 1000);
         this.decorSprites.push(decor);
         this.tweens.add({
           targets: decor,
