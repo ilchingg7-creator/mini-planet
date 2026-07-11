@@ -150,16 +150,25 @@ export class UIScene extends Phaser.Scene {
       this.t('create'),
       'item_green_sprout',
     );
-    const createHitArea = this.add.zone(642, 430, 132, 124).setInteractive({ useHandCursor: true });
+    const createButtonHomeX = 642;
+    const createHitArea = this.add.zone(createButtonHomeX, 430, 132, 124).setInteractive({ useHandCursor: true });
     createHitArea.on('pointerdown', () => {
       const gameScene = this.scene.get('GameScene') as Phaser.Scene & { createBaseItem(): boolean };
       const created = gameScene.createBaseItem();
+
+      // Kill any in-progress feedback tweens and snap the button back to its
+      // home transform before starting new ones. Without this, rapid clicks
+      // while the board is full make each new tween capture the already-shifted
+      // position as its yoyo "home", and the button gradually drifts off-screen.
+      this.tweens.killTweensOf(createButton);
+      createButton.x = createButtonHomeX;
+      createButton.scale = 1;
       this.tweens.add({ targets: createButton, scale: 0.92, duration: 70, yoyo: true });
 
       if (!created) {
         this.tweens.add({
           targets: createButton,
-          x: createButton.x + 7,
+          x: createButtonHomeX + 7,
           duration: 45,
           yoyo: true,
           repeat: 2,
