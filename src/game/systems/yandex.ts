@@ -5,6 +5,11 @@ export interface AdLifecycle {
   onClose?(): void;
 }
 
+interface YandexPlayer {
+  getData(): Promise<Record<string, unknown>>;
+  setData(data: Record<string, unknown>, flush?: boolean): Promise<void>;
+}
+
 interface YandexSdk {
   environment?: { i18n?: { lang?: string } };
   features?: { LoadingAPI?: { ready(): Promise<void> | void } };
@@ -18,6 +23,7 @@ interface YandexSdk {
       };
     }): void;
   };
+  getPlayer(options?: { scopes?: boolean }): Promise<YandexPlayer>;
 }
 
 interface YaGamesGlobal {
@@ -35,12 +41,28 @@ export interface YandexBridge {
   locale?: string;
   markReady(): Promise<void>;
   showRewardedAd(placement: RewardPlacement, lifecycle?: AdLifecycle): Promise<boolean>;
+  /**
+   * Load the raw save JSON string from Yandex cloud storage. Returns null
+   * if the SDK is unavailable, the player has no cloud data, or any error
+   * occurs. Never throws.
+   */
+  loadCloudSave(): Promise<string | null>;
+  /**
+   * Write the raw save JSON string to Yandex cloud storage. Flushes
+   * immediately (flush=true). Never throws; failures are swallowed so
+   * local gameplay is not disrupted.
+   */
+  writeCloudSave(data: string): Promise<void>;
 }
 
 export interface YandexBridgeOptions {
   hostname?: string;
   sdkGlobal?: YaGamesGlobal;
 }
+
+// Must match SAVE_KEY in save.ts. Hardcoded here to avoid a circular
+// dependency (save.ts → economy/merge → types; yandex.ts → types only).
+const CLOUD_SAVE_KEY = 'mini-planet-save';
 
 function isLocalHost(hostname: string): boolean {
   return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
@@ -98,6 +120,8 @@ export async function createYandexBridge(options: YandexBridgeOptions = {}): Pro
         lifecycle?.onClose?.();
         return true;
       },
+      loadCloudSave: async () => null,
+      writeCloudSave: async () => undefined,
     };
   }
 
@@ -128,12 +152,32 @@ export async function createYandexBridge(options: YandexBridgeOptions = {}): Pro
           },
         });
       }),
+      loadCloudSave: async () => {
+        try {
+          const player = await sdk.getPlayer({ scopes: false });
+          const data = await player.getData();
+          const raw = data[CLOUD_SAVE_KEY];
+          return typeof raw === 'string' ? raw : null;
+        } catch {
+          return null;
+        }
+      },
+      writeCloudSave: async (raw: string) => {
+        try {
+          const player = await sdk.getPlayer({ scopes: false });
+          await player.setData({ [CLOUD_SAVE_KEY]: raw }, true);
+        } catch {
+          // Swallow: local save is still valid; cloud will catch up on next write.
+        }
+      },
     };
   } catch {
     return {
       isAvailable: false,
       markReady: async () => undefined,
       showRewardedAd: async () => false,
+      loadCloudSave: async () => null,
+      writeCloudSave: async () => undefined,
     };
   }
 }

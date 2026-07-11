@@ -46,4 +46,10 @@ export interface MiniPlanetSaveData {
   economy: EconomyState;
   merge: MergeState;
   discoveredItemIds: ItemId[];
+  /**
+   * Epoch milliseconds of the last write. Used to reconcile local vs cloud
+   * saves (last-write-wins). Optional for backward compatibility with
+   * existing saves that predate cloud sync; treated as 0 when absent.
+   */
+  lastModified?: number;
 }

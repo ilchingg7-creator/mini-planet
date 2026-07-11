@@ -19,10 +19,10 @@ locales:
 sdk:
   ads: true
   purchases: false
-  cloudSaves: false
+  cloudSaves: true
 scenarios:
   ads: Activate the x2 merge reward button and verify rewarded ad callbacks and gameplay recovery
-  saves: Create and merge items, reload the page, and verify local progress restoration
+  saves: Create and merge items, reload the page, and verify local progress restoration; verify cloud save sync across two devices via Yandex getPlayer setData/getData
   resize: Resize between desktop and portrait mobile viewports during gameplay
   orientation: Keep the game usable in the declared portrait orientation
   return: Background and restore the game without losing progress or input

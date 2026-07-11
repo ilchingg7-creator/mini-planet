@@ -11,7 +11,7 @@
 | Translated languages | Russian, English |
 | Age rating | 0+ |
 | Category | Puzzles / Casual |
-| Cloud saves | Off: the current build uses local browser saves |
+| Cloud saves | On: progress syncs via Yandex Games SDK getPlayer().setData() / getData() (anonymous, no login required). Local localStorage remains the primary store; cloud is synced in the background with last-write-wins by timestamp. |
 | Delayed publication | Off |
 | Feedback email | `seme4kak@yandex.ru` |
 

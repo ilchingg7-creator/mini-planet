@@ -15,8 +15,9 @@ import {
   pickCreateItem,
 } from '../systems/generator';
 import { advanceBiomeIfComplete } from '../systems/progression';
-import { createDefaultSave, loadSave, writeSave } from '../systems/save';
+import { createDefaultSave, loadSave, mergeSaves, parseSaveRaw, writeSave } from '../systems/save';
 import type { MiniPlanetSaveData } from '../systems/types';
+import type { YandexBridge } from '../systems/yandex';
 import { AudioManager, PhaserAudioPort } from '../systems/AudioManager';
 
 export class GameScene extends Phaser.Scene {
@@ -26,6 +27,7 @@ export class GameScene extends Phaser.Scene {
   private background?: Phaser.GameObjects.Image;
   private planetMask?: Phaser.GameObjects.Graphics;
   private decorSprites: Phaser.GameObjects.Image[] = [];
+  private cloudWriteTimer?: ReturnType<typeof setTimeout>;
 
   constructor() {
     super('GameScene');
@@ -40,7 +42,13 @@ export class GameScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       document.removeEventListener('visibilitychange', onVisibilityChange);
       audio.destroy();
+      if (this.cloudWriteTimer) clearTimeout(this.cloudWriteTimer);
     });
+
+    // Kick off async cloud save sync. Don't await — let the game start
+    // immediately with the local save. If the cloud save is fresher, we
+    // adopt it and redraw; if local is fresher, we push it to the cloud.
+    void this.syncWithCloud();
 
     const biome = this.getCurrentBiome();
     this.cameras.main.setBackgroundColor('#2bbaf3');
@@ -145,12 +153,69 @@ export class GameScene extends Phaser.Scene {
     return this.registry.get('audioManager') as AudioManager | undefined;
   }
 
+  private getBridge(): YandexBridge | undefined {
+    return this.registry.get('yandexBridge') as YandexBridge | undefined;
+  }
+
   private persistAndRedraw(): void {
+    this.save = { ...this.save, lastModified: Date.now() };
     writeSave(window.localStorage, this.save);
     this.drawBiome();
     this.drawSlots();
     this.drawDecorations();
     this.events.emit('save-changed', this.save);
+    this.scheduleCloudWrite();
+  }
+
+  /**
+   * Asynchronously reconcile the local save with the Yandex cloud save.
+   * Last-write-wins by `lastModified` timestamp. If cloud is fresher,
+   * adopt it and redraw. If local is fresher (or cloud is empty), push
+   * local to cloud. Never throws; all errors are swallowed so gameplay
+   * is never disrupted by cloud failures.
+   */
+  private async syncWithCloud(): Promise<void> {
+    const bridge = this.getBridge();
+    if (!bridge?.isAvailable) return;
+
+    let cloudRaw: string | null;
+    try {
+      cloudRaw = await bridge.loadCloudSave();
+    } catch {
+      return;
+    }
+
+    const cloudSave = cloudRaw ? parseSaveRaw(cloudRaw, Date.now()) : null;
+    const before = this.save;
+    const merged = mergeSaves(before, cloudSave);
+
+    if (merged !== before) {
+      // Cloud was fresher — adopt it locally and redraw.
+      this.save = merged;
+      writeSave(window.localStorage, this.save);
+      this.drawBiome();
+      this.drawSlots();
+      this.drawDecorations();
+      this.events.emit('save-changed', this.save);
+    } else if (cloudSave === null && before.lastModified) {
+      // No cloud save exists yet — seed it with the current local save
+      // so future sessions on other devices can pick it up.
+      this.scheduleCloudWrite();
+    }
+  }
+
+  /**
+   * Debounce cloud writes so rapid gameplay (e.g. fast merges) doesn't
+   * spam the Yandex API. Waits 2s after the last write before pushing.
+   */
+  private scheduleCloudWrite(): void {
+    if (this.cloudWriteTimer) clearTimeout(this.cloudWriteTimer);
+    this.cloudWriteTimer = setTimeout(() => {
+      this.cloudWriteTimer = undefined;
+      const bridge = this.getBridge();
+      if (!bridge?.isAvailable) return;
+      void bridge.writeCloudSave(JSON.stringify(this.save));
+    }, 2000);
   }
 
   private getCurrentBiome() {

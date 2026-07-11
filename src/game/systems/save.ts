@@ -26,16 +26,43 @@ export function loadSave(storage: SaveStorage, now: number): MiniPlanetSaveData 
     return createDefaultSave(now);
   }
 
-  try {
-    const parsed = JSON.parse(raw) as MiniPlanetSaveData;
-    return isVersionOneSave(parsed) ? normalizeSave(parsed) : createDefaultSave(now);
-  } catch {
-    return createDefaultSave(now);
-  }
+  return parseSaveRaw(raw, now) ?? createDefaultSave(now);
 }
 
 export function writeSave(storage: SaveStorage, data: MiniPlanetSaveData): void {
   storage.setItem(SAVE_KEY, JSON.stringify(data));
+}
+
+/**
+ * Parse a raw JSON save string into a validated MiniPlanetSaveData, or
+ * return null if the JSON is invalid or the structure doesn't match.
+ * Used by both loadSave (for localStorage) and the cloud sync path
+ * (for Yandex cloud data).
+ */
+export function parseSaveRaw(raw: string, _now: number): MiniPlanetSaveData | null {
+  try {
+    const parsed = JSON.parse(raw) as MiniPlanetSaveData;
+    return isVersionOneSave(parsed) ? normalizeSave(parsed) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Reconcile a local save with a cloud save using last-write-wins by
+ * `lastModified` timestamp. Returns the freshest save. If cloud is null
+ * or older, local is returned unchanged. If cloud is fresher, cloud is
+ * returned. Saves without `lastModified` are treated as timestamp 0
+ * (oldest), so any save with a real timestamp wins over them.
+ */
+export function mergeSaves(
+  local: MiniPlanetSaveData,
+  cloud: MiniPlanetSaveData | null,
+): MiniPlanetSaveData {
+  if (!cloud) return local;
+  const localT = local.lastModified ?? 0;
+  const cloudT = cloud.lastModified ?? 0;
+  return cloudT > localT ? cloud : local;
 }
 
 function isVersionOneSave(value: MiniPlanetSaveData): value is MiniPlanetSaveData {
