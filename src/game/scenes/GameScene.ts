@@ -90,6 +90,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   selectSlot(slotIndex: number): void {
+    const previousLevel = this.save.economy.planetLevel;
     const slot = this.save.merge.slots[slotIndex];
     const item = slot.itemId ? getItemById(slot.itemId) : undefined;
     const biome = item ? BIOMES.find((candidate) => candidate.id === item.biomeId) : undefined;
@@ -111,6 +112,12 @@ export class GameScene extends Phaser.Scene {
     this.save = advanceBiomeIfComplete(this.save, BIOMES, BOARD_SLOT_COUNT);
 
     this.persistAndRedraw();
+    if (this.save.economy.planetLevel > previousLevel) {
+      this.events.emit('level-advanced', this.save.economy.planetLevel);
+    }
+    if (mergedItemId) {
+      this.events.emit('item-merged');
+    }
   }
 
   private persistAndRedraw(): void {

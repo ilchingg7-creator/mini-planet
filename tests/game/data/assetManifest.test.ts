@@ -2,15 +2,14 @@ import { APPROVED_ASSETS } from '../../../src/game/data/assetManifest';
 import { BIOMES } from '../../../src/game/data/biomes';
 
 describe('approved asset manifest', () => {
-  it('contains item and decoration sprites for every green-biome tier', () => {
+  it('contains planets, item sprites, and decoration sprites for every biome', () => {
     const keys = new Set(APPROVED_ASSETS.map((asset) => asset.key));
-    const greenBiome = BIOMES.find((biome) => biome.id === 'green');
-
-    expect(greenBiome).toBeDefined();
-
-    for (const item of greenBiome?.items ?? []) {
-      expect(keys.has(item.iconKey), `missing ${item.iconKey}`).toBe(true);
-      expect(keys.has(item.decorKey), `missing ${item.decorKey}`).toBe(true);
+    for (const biome of BIOMES) {
+      expect(keys.has(biome.planetAssetKey), `missing ${biome.planetAssetKey}`).toBe(true);
+      for (const item of biome.items) {
+        expect(keys.has(item.iconKey), `missing ${item.iconKey}`).toBe(true);
+        expect(keys.has(item.decorKey), `missing ${item.decorKey}`).toBe(true);
+      }
     }
   });
 

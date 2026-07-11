@@ -1,19 +1,13 @@
 import { BIOMES, getBiomeById, getItemById } from '../../../src/game/data/biomes';
 
 describe('biome content', () => {
-  it('ships prototype data with two playable biomes', () => {
-    expect(BIOMES.map((biome) => biome.id).slice(0, 2)).toEqual(['green', 'sweet']);
-    expect(BIOMES.every((biome) => biome.items.length >= 8)).toBe(true);
-  });
-
-  it('defines the first release content target in data', () => {
+  it('defines four complete playable biomes', () => {
     expect(BIOMES.map((biome) => biome.id)).toEqual(['green', 'sweet', 'sea', 'moon']);
     expect(BIOMES.every((biome) => biome.items.length === 12)).toBe(true);
   });
 
   it('keeps item order data-driven and unique', () => {
     const ids = new Set<string>();
-
     for (const biome of BIOMES) {
       biome.items.forEach((item, index) => {
         expect(item.tier).toBe(index);
@@ -24,8 +18,8 @@ describe('biome content', () => {
   });
 
   it('finds biomes and items by id', () => {
-    expect(getBiomeById('green')?.title).toBe('Зелёная планета');
-    expect(getItemById('green_flower')?.title).toBe('Цветок');
+    expect(getBiomeById('green')?.title).toBe('Green Planet');
+    expect(getItemById('green_flower')?.title).toBe('Flower');
     expect(getItemById('missing')).toBeUndefined();
   });
 });

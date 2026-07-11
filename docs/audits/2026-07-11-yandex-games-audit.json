@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "project": "Mini Planet",
+  "date": "2026-07-11",
+  "rulesSnapshot": {
+    "requirementsUpdated": "2026-05-05",
+    "catalogChecked": "2026-06-19",
+    "source": "https://yandex.ru/dev/games/doc/ru/concepts/requirements"
+  },
+  "deterministicSummary": {
+    "BLOCKER": 0,
+    "ERROR": 0,
+    "WARNING": 0,
+    "MANUAL": 110,
+    "PASS": 0
+  },
+  "verifiedFixes": [
+    { "ruleId": "1.1", "evidence": "Dynamic /sdk.js loading and SDK initialization are present." },
+    { "ruleId": "1.19.2", "evidence": "LoadingAPI.ready is called after playable scenes and controls are created." },
+    { "ruleId": "4.5.1", "evidence": "Localized ad confirmation states the exact two-minute x2 merge-coin reward." },
+    { "ruleId": "2.14", "evidence": "Locale prefers ysdk.environment.i18n.lang." },
+    { "ruleId": "6.8", "evidence": "A first-run create-and-merge tutorial is implemented." },
+    { "ruleId": "6.1", "evidence": "Support dialog displays seme4kak@yandex.ru." }
+  ],
+  "remaining": [
+    "Real SDK and advertising callbacks require Yandex draft debug-panel verification.",
+    "The exact submission ZIP has not been audited.",
+    "Final promotional assets and publication metadata have not been audited."
+  ],
+  "verdict": "READY_FOR_FINAL_MANUAL_REVIEW"
+}

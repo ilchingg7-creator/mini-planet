@@ -1,0 +1,28 @@
+version: 1
+project:
+  name: Mini Planet
+commands:
+  build: npm.cmd run build
+  serve: npm.cmd run preview -- --port 4173
+runtime:
+  url: http://127.0.0.1:4173
+paths:
+  build: dist
+targets:
+  desktop: true
+  mobile: true
+  tv: false
+orientation: portrait
+locales:
+  - ru
+  - en
+sdk:
+  ads: true
+  purchases: false
+  cloudSaves: false
+scenarios:
+  ads: Activate the x2 merge reward button and verify rewarded ad callbacks and gameplay recovery
+  saves: Create and merge items, reload the page, and verify local progress restoration
+  resize: Resize between desktop and portrait mobile viewports during gameplay
+  orientation: Keep the game usable in the declared portrait orientation
+  return: Background and restore the game without losing progress or input
