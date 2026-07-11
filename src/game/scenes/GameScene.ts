@@ -1,16 +1,19 @@
 import Phaser from 'phaser';
 import { BIOMES, getBiomeById, getItemById } from '../data/biomes';
 import { BOARD_SLOT_COUNT, SLOT_POSITIONS } from '../data/layout';
-import { getPlanetDecorPlacement } from '../data/planetDecor';
+import {
+  getInventoryDecorItems,
+  getPlanetDecorPlacement,
+} from '../data/planetDecor';
 import { createBaseItem, selectSlot } from '../systems/merge';
-import { accruePassiveIncome } from '../systems/economy';
+import { awardMergeCoins } from '../systems/economy';
+import {
+  getHighestReachedTier,
+  pickCreateItem,
+} from '../systems/generator';
 import { advanceBiomeIfComplete } from '../systems/progression';
 import { createDefaultSave, loadSave, writeSave } from '../systems/save';
 import type { MiniPlanetSaveData } from '../systems/types';
-
-const ITEM_INCOME = Object.fromEntries(
-  BIOMES.flatMap((biome) => biome.items.map((item) => [item.id, item.baseIncome])),
-);
 
 export class GameScene extends Phaser.Scene {
   private save: MiniPlanetSaveData = createDefaultSave(Date.now());
@@ -26,7 +29,6 @@ export class GameScene extends Phaser.Scene {
 
   create(): void {
     this.save = loadSave(window.localStorage, Date.now());
-    this.collectPassiveIncome();
 
     const biome = this.getCurrentBiome();
     this.cameras.main.setBackgroundColor('#2bbaf3');
@@ -44,23 +46,27 @@ export class GameScene extends Phaser.Scene {
     this.drawDecorations();
     this.drawSlots();
     this.events.emit('save-changed', this.save);
-    this.time.addEvent({
-      delay: 1000,
-      loop: true,
-      callback: () => this.collectPassiveIncome(),
-    });
   }
 
   getSaveData(): MiniPlanetSaveData {
     return this.save;
   }
 
-  createBaseItem(): void {
-    const baseItemId = this.getCurrentBiome().items[0].id;
+  createBaseItem(): boolean {
+    const biome = this.getCurrentBiome();
+    const highestReachedTier = getHighestReachedTier(biome, this.save.discoveredItemIds);
+    const generatedItem = pickCreateItem(biome, highestReachedTier);
     const previousSlots = this.save.merge.slots;
+    const nextMerge = createBaseItem(this.save.merge, generatedItem.id);
+    const created = nextMerge !== this.save.merge;
+
+    if (!created) {
+      return false;
+    }
+
     this.save = {
       ...this.save,
-      merge: createBaseItem(this.save.merge, baseItemId),
+      merge: nextMerge,
     };
     this.persistAndRedraw();
 
@@ -68,6 +74,7 @@ export class GameScene extends Phaser.Scene {
       (slot, index) => slot.itemId !== previousSlots[index]?.itemId,
     );
     this.pulseSlot(createdIndex);
+    return true;
   }
 
   selectSlot(slotIndex: number): void {
@@ -76,14 +83,16 @@ export class GameScene extends Phaser.Scene {
     const biome = item ? BIOMES.find((candidate) => candidate.id === item.biomeId) : undefined;
     const nextItem = item ? biome?.items[item.tier + 1] : undefined;
     const nextMerge = selectSlot(this.save.merge, slotIndex, nextItem?.id);
-    const discovered = nextMerge.lastDiscoveryItemId;
+    const mergedItemId = nextMerge.lastDiscoveryItemId;
     const discoveredItemIds =
-      discovered && !this.save.discoveredItemIds.includes(discovered)
-        ? [...this.save.discoveredItemIds, discovered]
+      mergedItemId && !this.save.discoveredItemIds.includes(mergedItemId)
+        ? [...this.save.discoveredItemIds, mergedItemId]
         : this.save.discoveredItemIds;
+    const mergeReward = mergedItemId ? (getItemById(mergedItemId)?.baseIncome ?? 0) : 0;
 
     this.save = {
       ...this.save,
+      economy: awardMergeCoins(this.save.economy, mergeReward),
       merge: { ...nextMerge, lastDiscoveryItemId: undefined },
       discoveredItemIds,
     };
@@ -97,20 +106,6 @@ export class GameScene extends Phaser.Scene {
     this.drawBiome();
     this.drawSlots();
     this.drawDecorations();
-    this.events.emit('save-changed', this.save);
-  }
-
-  private collectPassiveIncome(): void {
-    this.save = {
-      ...this.save,
-      economy: accruePassiveIncome(
-        this.save.economy,
-        Date.now(),
-        this.save.discoveredItemIds,
-        ITEM_INCOME,
-      ),
-    };
-    writeSave(window.localStorage, this.save);
     this.events.emit('save-changed', this.save);
   }
 
@@ -196,30 +191,24 @@ export class GameScene extends Phaser.Scene {
     this.decorSprites.forEach((decor) => decor.destroy());
     this.decorSprites = [];
 
-    const currentBiomeId = this.save.economy.currentBiomeId;
-    this.save.discoveredItemIds
-      .filter((itemId) => getItemById(itemId)?.biomeId === currentBiomeId)
-      .slice(0, 12)
-      .forEach((itemId, index) => {
-        const item = getItemById(itemId);
+    getInventoryDecorItems(this.save.merge.slots).forEach(({ item, slotIndex }) => {
+      if (!this.textures.exists(item.decorKey)) {
+        return;
+      }
 
-        if (!item || !this.textures.exists(item.decorKey)) {
-          return;
-        }
-
-        const placement = getPlanetDecorPlacement(item, index);
-        const decor = this.add
-          .image(placement.x, placement.y, item.decorKey)
-          .setDisplaySize(placement.size, placement.size)
-          .setDepth(1 + placement.y / 1000);
-        this.decorSprites.push(decor);
-        this.tweens.add({
-          targets: decor,
-          scale: { from: 0, to: decor.scale },
-          duration: 260,
-          ease: 'Back.out',
-        });
+      const placement = getPlanetDecorPlacement(item, slotIndex);
+      const decor = this.add
+        .image(placement.x, placement.y, item.decorKey)
+        .setDisplaySize(placement.size, placement.size)
+        .setDepth(1 + placement.y / 1000);
+      this.decorSprites.push(decor);
+      this.tweens.add({
+        targets: decor,
+        scale: { from: 0, to: decor.scale },
+        duration: 260,
+        ease: 'Back.out',
       });
+    });
   }
 
   private pulseSlot(index: number): void {

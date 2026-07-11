@@ -1,5 +1,8 @@
 import { BIOMES } from '../../../src/game/data/biomes';
-import { getPlanetDecorPlacement } from '../../../src/game/data/planetDecor';
+import {
+  getInventoryDecorItems,
+  getPlanetDecorPlacement,
+} from '../../../src/game/data/planetDecor';
 
 describe('planet decoration layout', () => {
   it('keeps deterministic slightly irregular positions inside the planet', () => {
@@ -24,5 +27,21 @@ describe('planet decoration layout', () => {
     );
 
     expect(sizes).toEqual([36, 44, 50, 88, 98, 92, 104, 92, 72, 64, 110, 124]);
+  });
+
+  it('mirrors current inventory items on the planet and preserves duplicates', () => {
+    const items = getInventoryDecorItems([
+      { index: 0, itemId: 'green_sprout' },
+      { index: 1, itemId: 'green_sprout' },
+      { index: 2, itemId: 'green_flower' },
+      { index: 3 },
+    ]);
+
+    expect(items.map(({ item }) => item.id)).toEqual([
+      'green_sprout',
+      'green_sprout',
+      'green_flower',
+    ]);
+    expect(items.map(({ slotIndex }) => slotIndex)).toEqual([0, 1, 2]);
   });
 });

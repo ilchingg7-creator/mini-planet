@@ -60,6 +60,13 @@ export function accruePassiveIncome(
   return applyOfflineIncome(state, now, incomePerSecond);
 }
 
+export function awardMergeCoins(state: EconomyState, reward: number): EconomyState {
+  return {
+    ...state,
+    coins: state.coins + Math.max(0, Math.floor(reward)),
+  };
+}
+
 export function buyUpgrade(state: EconomyState, upgradeId: UpgradeId): EconomyState {
   const level = state.upgrades[upgradeId];
   const cost = getUpgradeCost(upgradeId, level);

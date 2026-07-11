@@ -1,6 +1,6 @@
 import {
-  accruePassiveIncome,
   applyOfflineIncome,
+  awardMergeCoins,
   buyUpgrade,
   calculatePassiveIncomePerSecond,
   createInitialEconomyState,
@@ -25,17 +25,12 @@ describe('economy system', () => {
     expect(next.lastSavedAt).toBe(61_000);
   });
 
-  it('accrues live income from discovered items over elapsed time', () => {
+  it('awards coins only when a merge supplies a reward', () => {
     const initial = createInitialEconomyState(1_000);
-    const next = accruePassiveIncome(
-      initial,
-      4_000,
-      ['green_flower'],
-      { green_flower: 2 },
-    );
+    const next = awardMergeCoins(initial, 8);
 
-    expect(next.coins).toBe(6);
-    expect(next.lastSavedAt).toBe(4_000);
+    expect(next.coins).toBe(8);
+    expect(next.lastSavedAt).toBe(1_000);
   });
 
   it('buys an upgrade when coins are enough', () => {

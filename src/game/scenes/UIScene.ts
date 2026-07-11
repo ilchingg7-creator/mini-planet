@@ -115,14 +115,26 @@ export class UIScene extends Phaser.Scene {
       '\u0421\u043e\u0437\u0434\u0430\u0442\u044c',
       'item_green_sprout',
     );
-    createButton.on('pointerdown', () => {
-      const gameScene = this.scene.get('GameScene') as Phaser.Scene & { createBaseItem(): void };
-      gameScene.createBaseItem();
+    const createHitArea = this.add.zone(642, 430, 132, 124).setInteractive({ useHandCursor: true });
+    createHitArea.on('pointerdown', () => {
+      const gameScene = this.scene.get('GameScene') as Phaser.Scene & { createBaseItem(): boolean };
+      const created = gameScene.createBaseItem();
       this.tweens.add({ targets: createButton, scale: 0.92, duration: 70, yoyo: true });
+
+      if (!created) {
+        this.tweens.add({
+          targets: createButton,
+          x: createButton.x + 7,
+          duration: 45,
+          yoyo: true,
+          repeat: 2,
+        });
+      }
     });
 
     const boostButton = this.createActionButton(642, 565, 0x32aef1, 0x147bc4, 'x2');
-    boostButton.on('pointerdown', async () => {
+    const boostHitArea = this.add.zone(642, 565, 132, 124).setInteractive({ useHandCursor: true });
+    boostHitArea.on('pointerdown', async () => {
       const bridge = this.registry.get('yandexBridge');
       await bridge?.showRewardedAd('incomeBoost');
       this.tweens.add({ targets: boostButton, scale: 0.92, duration: 70, yoyo: true });
@@ -166,8 +178,6 @@ export class UIScene extends Phaser.Scene {
         .setOrigin(0.5),
     );
 
-    container.setSize(126, 118);
-    container.setInteractive(new Phaser.Geom.Rectangle(-63, -59, 126, 118), Phaser.Geom.Rectangle.Contains);
     return container;
   }
 

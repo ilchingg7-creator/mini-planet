@@ -1,4 +1,5 @@
-import type { ItemDefinition } from '../systems/types';
+import { getItemById } from './biomes';
+import type { GameSlot, ItemDefinition } from '../systems/types';
 
 const GREEN_DECOR_SIZES: Record<string, number> = {
   green_sprout: 36,
@@ -34,6 +35,18 @@ export interface PlanetDecorPlacement {
   x: number;
   y: number;
   size: number;
+}
+
+export interface InventoryDecorItem {
+  item: ItemDefinition;
+  slotIndex: number;
+}
+
+export function getInventoryDecorItems(slots: GameSlot[]): InventoryDecorItem[] {
+  return slots.flatMap((slot) => {
+    const item = slot.itemId ? getItemById(slot.itemId) : undefined;
+    return item ? [{ item, slotIndex: slot.index }] : [];
+  });
 }
 
 export function getPlanetDecorPlacement(
