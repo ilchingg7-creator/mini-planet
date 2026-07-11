@@ -1,0 +1,227 @@
+[
+  {
+    "key": "planet_green",
+    "path": "assets/approved/green-v2/planet_green_base.png",
+    "kind": "planet",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Clean empty grassy mini planet base, toy-like 3D style, ready for progressive decorations, no text or watermark."
+  },
+  {
+    "key": "item_green_sprout",
+    "path": "assets/approved/green-v2/green_sprout.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D sprout."
+  },
+  {
+    "key": "decor_green_sprout",
+    "path": "assets/approved/green-v2/green_sprout.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D sprout."
+  },
+  {
+    "key": "item_green_flower",
+    "path": "assets/approved/green-v2/green_flower.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D daisy."
+  },
+  {
+    "key": "decor_green_flower",
+    "path": "assets/approved/green-v2/green_flower.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D daisy."
+  },
+  {
+    "key": "item_green_mushroom",
+    "path": "assets/approved/green-v2/green_mushroom.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D mushroom."
+  },
+  {
+    "key": "decor_green_mushroom",
+    "path": "assets/approved/green-v2/green_mushroom.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D mushroom."
+  },
+  {
+    "key": "item_green_tree",
+    "path": "assets/approved/green-v2/green_tree.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D tree."
+  },
+  {
+    "key": "decor_green_tree",
+    "path": "assets/approved/green-v2/green_tree.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D tree."
+  },
+  {
+    "key": "item_green_house",
+    "path": "assets/approved/green-v2/green_house.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D cottage."
+  },
+  {
+    "key": "decor_green_house",
+    "path": "assets/approved/green-v2/green_house.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D cottage."
+  },
+  {
+    "key": "item_green_pond",
+    "path": "assets/approved/green-v2/green_pond.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D pond."
+  },
+  {
+    "key": "decor_green_pond",
+    "path": "assets/approved/green-v2/green_pond.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D pond."
+  },
+  {
+    "key": "item_green_mill",
+    "path": "assets/approved/green-v2/green_mill.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D windmill."
+  },
+  {
+    "key": "decor_green_mill",
+    "path": "assets/approved/green-v2/green_mill.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D windmill."
+  },
+  {
+    "key": "item_green_rainbow",
+    "path": "assets/approved/green-v2/green_rainbow.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D rainbow."
+  },
+  {
+    "key": "decor_green_rainbow",
+    "path": "assets/approved/green-v2/green_rainbow.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D rainbow."
+  },
+  {
+    "key": "item_green_garden_bench",
+    "path": "assets/approved/green-v2/green_garden_bench.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D garden bench."
+  },
+  {
+    "key": "decor_green_garden_bench",
+    "path": "assets/approved/green-v2/green_garden_bench.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D garden bench."
+  },
+  {
+    "key": "item_green_bird_house",
+    "path": "assets/approved/green-v2/green_bird_house.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D birdhouse."
+  },
+  {
+    "key": "decor_green_bird_house",
+    "path": "assets/approved/green-v2/green_bird_house.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D birdhouse."
+  },
+  {
+    "key": "item_green_sun_tower",
+    "path": "assets/approved/green-v2/green_sun_tower.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D sun tower."
+  },
+  {
+    "key": "decor_green_sun_tower",
+    "path": "assets/approved/green-v2/green_sun_tower.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D sun tower."
+  },
+  {
+    "key": "item_green_rainbow_palace",
+    "path": "assets/approved/green-v2/green_rainbow_palace.png",
+    "kind": "item",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D rainbow palace."
+  },
+  {
+    "key": "decor_green_rainbow_palace",
+    "path": "assets/approved/green-v2/green_rainbow_palace.png",
+    "kind": "decor",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "Approved green biome v2 contact sheet: cohesive toy-like 3D rainbow palace."
+  }
+]

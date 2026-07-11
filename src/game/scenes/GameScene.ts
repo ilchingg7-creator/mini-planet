@@ -7,14 +7,18 @@ import { createDefaultSave, loadSave, writeSave } from '../systems/save';
 import type { MiniPlanetSaveData } from '../systems/types';
 
 const DECOR_POSITIONS = [
-  { x: 290, y: 450 },
-  { x: 405, y: 440 },
-  { x: 250, y: 535 },
-  { x: 470, y: 535 },
-  { x: 360, y: 390 },
-  { x: 355, y: 600 },
-  { x: 295, y: 600 },
-  { x: 430, y: 600 },
+  { x: 248, y: 410, size: 54 },
+  { x: 360, y: 390, size: 58 },
+  { x: 200, y: 500, size: 58 },
+  { x: 410, y: 485, size: 76 },
+  { x: 302, y: 315, size: 90 },
+  { x: 330, y: 545, size: 82 },
+  { x: 220, y: 590, size: 84 },
+  { x: 420, y: 590, size: 84 },
+  { x: 170, y: 450, size: 62 },
+  { x: 465, y: 420, size: 68 },
+  { x: 275, y: 635, size: 84 },
+  { x: 385, y: 625, size: 94 },
 ];
 
 export class GameScene extends Phaser.Scene {
@@ -33,23 +37,17 @@ export class GameScene extends Phaser.Scene {
     this.save = loadSave(window.localStorage, Date.now());
 
     const biome = this.getCurrentBiome();
-    this.drawBackdrop();
-    this.background = this.add.image(360, 640, biome.backgroundAssetKey).setDisplaySize(720, 1280).setAlpha(0.08);
+    this.cameras.main.setBackgroundColor('#2bbaf3');
+    this.background = this.add.image(360, 640, biome.backgroundAssetKey).setDisplaySize(800, 1420);
+    this.drawPlanetShadow();
     this.drawTray();
-    this.planet = this.add.image(360, 385, biome.planetAssetKey).setDisplaySize(470, 470);
+
+    this.planet = this.add.image(315, 500, biome.planetAssetKey).setDisplaySize(610, 610);
     this.planetMask = this.add.graphics();
     this.planetMask.fillStyle(0xffffff);
-    this.planetMask.fillCircle(360, 385, 218);
+    this.planetMask.fillCircle(315, 500, 282);
     this.planet.setMask(this.planetMask.createGeometryMask());
     this.planetMask.setVisible(false);
-    this.tweens.add({
-      targets: this.planet,
-      y: 400,
-      duration: 1700,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.inOut',
-    });
 
     this.drawDecorations();
     this.drawSlots();
@@ -58,11 +56,17 @@ export class GameScene extends Phaser.Scene {
 
   createBaseItem(): void {
     const baseItemId = this.getCurrentBiome().items[0].id;
+    const previousSlots = this.save.merge.slots;
     this.save = {
       ...this.save,
       merge: createBaseItem(this.save.merge, baseItemId),
     };
     this.persistAndRedraw();
+
+    const createdIndex = this.save.merge.slots.findIndex(
+      (slot, index) => slot.itemId !== previousSlots[index]?.itemId,
+    );
+    this.pulseSlot(createdIndex);
   }
 
   selectSlot(slotIndex: number): void {
@@ -111,24 +115,20 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private drawBackdrop(): void {
-    const backdrop = this.add.graphics();
-    backdrop.fillGradientStyle(0x95ddff, 0x95ddff, 0xd9f7ff, 0xd9f7ff, 1);
-    backdrop.fillRect(0, 0, 720, 1280);
-
-    backdrop.fillStyle(0xffffff, 0.45);
-    backdrop.fillEllipse(130, 200, 180, 72);
-    backdrop.fillEllipse(600, 260, 220, 82);
-    backdrop.fillEllipse(120, 655, 250, 100);
-    backdrop.fillEllipse(610, 625, 210, 78);
+  private drawPlanetShadow(): void {
+    const shadow = this.add.graphics();
+    shadow.fillStyle(0x087ab3, 0.24);
+    shadow.fillEllipse(315, 790, 430, 62);
   }
 
   private drawTray(): void {
     const tray = this.add.graphics();
-    tray.fillStyle(0xffffff, 0.72);
-    tray.fillRoundedRect(60, 842, 600, 378, 28);
-    tray.lineStyle(4, 0x7bcf73, 0.5);
-    tray.strokeRoundedRect(60, 842, 600, 378, 28);
+    tray.fillStyle(0x0875a8, 0.2);
+    tray.fillRoundedRect(35, 966, 650, 250, 34);
+    tray.fillStyle(0xfffbef, 0.98);
+    tray.fillRoundedRect(28, 956, 650, 250, 34);
+    tray.lineStyle(5, 0xffffff, 0.9);
+    tray.strokeRoundedRect(28, 956, 650, 250, 34);
   }
 
   private drawSlots(): void {
@@ -138,30 +138,40 @@ export class GameScene extends Phaser.Scene {
     this.save.merge.slots.forEach((slot) => {
       const position = SLOT_POSITIONS[slot.index];
       const container = this.add.container(position.x, position.y);
-      const bg = this.add
-        .rectangle(0, 0, 96, 96, 0xffffff, 0.92)
-        .setStrokeStyle(4, this.save.merge.selectedSlotIndex === slot.index ? 0xffc928 : 0x62bd5a);
-      container.add(bg);
+      const selected = this.save.merge.selectedSlotIndex === slot.index;
+      const frame = this.add.graphics();
+      frame.fillStyle(selected ? 0xfff1a8 : 0xfff9e9, 1);
+      frame.fillRoundedRect(-43, -43, 86, 86, 17);
+      frame.lineStyle(selected ? 5 : 3, selected ? 0xffb900 : 0xe9dcc1, 1);
+      frame.strokeRoundedRect(-43, -43, 86, 86, 17);
+      container.add(frame);
 
       if (slot.itemId) {
         const item = getItemById(slot.itemId);
         if (item && this.textures.exists(item.iconKey)) {
-          container.add(this.add.image(0, -4, item.iconKey).setDisplaySize(70, 70));
-        } else {
+          container.add(this.add.image(0, -3, item.iconKey).setDisplaySize(72, 72));
+
+          const badge = this.add.graphics();
+          badge.fillStyle(0x72cb21, 1);
+          badge.fillCircle(33, 33, 14);
+          badge.lineStyle(2, 0xffffff, 1);
+          badge.strokeCircle(33, 33, 14);
+          container.add(badge);
           container.add(
             this.add
-              .text(0, -4, item?.title.slice(0, 2) ?? '?', {
+              .text(33, 33, String(item.tier + 1), {
                 fontFamily: 'Arial',
-                fontSize: '24px',
-                color: '#17442a',
+                fontSize: '15px',
+                fontStyle: 'bold',
+                color: '#ffffff',
               })
               .setOrigin(0.5),
           );
         }
       }
 
-      container.setSize(96, 96);
-      container.setInteractive(new Phaser.Geom.Rectangle(-48, -48, 96, 96), Phaser.Geom.Rectangle.Contains);
+      container.setSize(90, 90);
+      container.setInteractive(new Phaser.Geom.Rectangle(-45, -45, 90, 90), Phaser.Geom.Rectangle.Contains);
       container.on('pointerdown', () => this.selectSlot(slot.index));
       this.slotSprites.push(container);
     });
@@ -176,21 +186,35 @@ export class GameScene extends Phaser.Scene {
       .filter((itemId) => getItemById(itemId)?.biomeId === currentBiomeId)
       .slice(0, DECOR_POSITIONS.length)
       .forEach((itemId, index) => {
-      const item = getItemById(itemId);
-      const position = DECOR_POSITIONS[index];
+        const item = getItemById(itemId);
+        const position = DECOR_POSITIONS[index];
 
-      if (!item || !position || !this.textures.exists(item.decorKey)) {
-        return;
-      }
+        if (!item || !position || !this.textures.exists(item.decorKey)) {
+          return;
+        }
 
-      const decor = this.add.image(position.x, position.y - 90, item.decorKey).setDisplaySize(58, 58);
-      this.decorSprites.push(decor);
-      this.tweens.add({
-        targets: decor,
-        scale: { from: 0, to: decor.scale },
-        duration: 220,
-        ease: 'Back.out',
+        const decor = this.add.image(position.x, position.y, item.decorKey).setDisplaySize(position.size, position.size);
+        this.decorSprites.push(decor);
+        this.tweens.add({
+          targets: decor,
+          scale: { from: 0, to: decor.scale },
+          duration: 260,
+          ease: 'Back.out',
+        });
       });
+  }
+
+  private pulseSlot(index: number): void {
+    const slot = this.slotSprites[index];
+    if (!slot) {
+      return;
+    }
+
+    this.tweens.add({
+      targets: slot,
+      scale: { from: 0.78, to: 1 },
+      duration: 220,
+      ease: 'Back.out',
     });
   }
 }
