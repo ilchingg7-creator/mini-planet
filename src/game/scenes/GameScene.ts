@@ -6,7 +6,10 @@ import {
   getPlanetDecorPlacement,
 } from '../data/planetDecor';
 import { createBaseItem, selectSlot } from '../systems/merge';
-import { awardMergeCoins } from '../systems/economy';
+import {
+  activateMergeRewardBoost,
+  awardMergeCoins,
+} from '../systems/economy';
 import {
   getHighestReachedTier,
   pickCreateItem,
@@ -52,6 +55,15 @@ export class GameScene extends Phaser.Scene {
     return this.save;
   }
 
+  activateMergeBoost(durationMs: number): void {
+    this.save = {
+      ...this.save,
+      economy: activateMergeRewardBoost(this.save.economy, Date.now(), durationMs),
+    };
+    writeSave(window.localStorage, this.save);
+    this.events.emit('save-changed', this.save);
+  }
+
   createBaseItem(): boolean {
     const biome = this.getCurrentBiome();
     const highestReachedTier = getHighestReachedTier(biome, this.save.discoveredItemIds);
@@ -92,7 +104,7 @@ export class GameScene extends Phaser.Scene {
 
     this.save = {
       ...this.save,
-      economy: awardMergeCoins(this.save.economy, mergeReward),
+      economy: awardMergeCoins(this.save.economy, mergeReward, Date.now()),
       merge: { ...nextMerge, lastDiscoveryItemId: undefined },
       discoveredItemIds,
     };

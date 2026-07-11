@@ -1,4 +1,4 @@
-export type RewardPlacement = 'incomeBoost' | 'betterItem';
+export type RewardPlacement = 'mergeBoost' | 'betterItem';
 
 export interface YandexBridge {
   isAvailable: boolean;

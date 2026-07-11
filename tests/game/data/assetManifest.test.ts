@@ -19,4 +19,10 @@ describe('approved asset manifest', () => {
 
     expect(planet?.path).toBe('assets/approved/green-v2/planet_green_base.png');
   });
+
+  it('uses the approved portrait background instead of the stretched square source', () => {
+    const background = APPROVED_ASSETS.find((asset) => asset.key === 'background_day');
+
+    expect(background?.path).toBe('assets/approved/background_day_v2.png');
+  });
 });

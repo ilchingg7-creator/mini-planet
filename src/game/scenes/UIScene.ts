@@ -5,6 +5,8 @@ import type { MiniPlanetSaveData } from '../systems/types';
 export class UIScene extends Phaser.Scene {
   private coinText?: Phaser.GameObjects.Text;
   private levelText?: Phaser.GameObjects.Text;
+  private boostTimerText?: Phaser.GameObjects.Text;
+  private boostEndsAt?: number;
 
   constructor() {
     super('UIScene');
@@ -22,10 +24,17 @@ export class UIScene extends Phaser.Scene {
     const updateCounters = (save: MiniPlanetSaveData) => {
       this.coinText?.setText(String(save.economy.coins));
       this.levelText?.setText('\u0423\u0440. ' + save.economy.planetLevel);
+      this.boostEndsAt = save.economy.rewardedBoostEndsAt;
+      this.updateBoostCountdown();
     };
 
     gameScene.events.on('save-changed', updateCounters);
     updateCounters(gameScene.getSaveData());
+    this.time.addEvent({
+      delay: 250,
+      loop: true,
+      callback: () => this.updateBoostCountdown(),
+    });
   }
 
   private drawLogo(): void {
@@ -133,12 +142,50 @@ export class UIScene extends Phaser.Scene {
     });
 
     const boostButton = this.createActionButton(642, 565, 0x32aef1, 0x147bc4, 'x2');
+    this.boostTimerText = this.add
+      .text(642, 600, '', {
+        fontFamily: 'Arial',
+        fontSize: '16px',
+        fontStyle: 'bold',
+        color: '#ffffff',
+        stroke: '#0864a5',
+        strokeThickness: 3,
+      })
+      .setOrigin(0.5);
     const boostHitArea = this.add.zone(642, 565, 132, 124).setInteractive({ useHandCursor: true });
     boostHitArea.on('pointerdown', async () => {
       const bridge = this.registry.get('yandexBridge');
-      await bridge?.showRewardedAd('incomeBoost');
+      const rewarded = await bridge?.showRewardedAd('mergeBoost');
+
+      if (rewarded) {
+        const gameScene = this.scene.get('GameScene') as Phaser.Scene & {
+          activateMergeBoost(durationMs: number): void;
+        };
+        gameScene.activateMergeBoost(120_000);
+      }
+
       this.tweens.add({ targets: boostButton, scale: 0.92, duration: 70, yoyo: true });
     });
+  }
+
+  private updateBoostCountdown(): void {
+    if (!this.boostTimerText) {
+      return;
+    }
+
+    const remainingSeconds = Math.max(
+      0,
+      Math.ceil(((this.boostEndsAt ?? 0) - Date.now()) / 1000),
+    );
+
+    if (remainingSeconds === 0) {
+      this.boostTimerText.setText('');
+      return;
+    }
+
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = String(remainingSeconds % 60).padStart(2, '0');
+    this.boostTimerText.setText(String(minutes) + ':' + seconds);
   }
 
   private createActionButton(

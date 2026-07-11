@@ -60,10 +60,27 @@ export function accruePassiveIncome(
   return applyOfflineIncome(state, now, incomePerSecond);
 }
 
-export function awardMergeCoins(state: EconomyState, reward: number): EconomyState {
+export function activateMergeRewardBoost(
+  state: EconomyState,
+  now: number,
+  durationMs: number,
+): EconomyState {
   return {
     ...state,
-    coins: state.coins + Math.max(0, Math.floor(reward)),
+    rewardedBoostEndsAt: now + Math.max(0, durationMs),
+  };
+}
+
+export function awardMergeCoins(
+  state: EconomyState,
+  reward: number,
+  now: number = Date.now(),
+): EconomyState {
+  const multiplier = state.rewardedBoostEndsAt && state.rewardedBoostEndsAt > now ? 2 : 1;
+
+  return {
+    ...state,
+    coins: state.coins + Math.max(0, Math.floor(reward * multiplier)),
   };
 }
 

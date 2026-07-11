@@ -1,5 +1,14 @@
 [
   {
+    "key": "background_day",
+    "path": "assets/approved/background_day_v2.png",
+    "kind": "background",
+    "status": "approved",
+    "source": "generated",
+    "license": "project-generated",
+    "prompt": "High-resolution 9:16 blue sky background with crisp toy-like clouds around the edges, no text, UI, planet, blur or watermark."
+  },
+  {
     "key": "planet_green",
     "path": "assets/approved/green-v2/planet_green_base.png",
     "kind": "planet",
